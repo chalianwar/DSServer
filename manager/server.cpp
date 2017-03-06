@@ -1,7 +1,5 @@
 #include "server.h"
 #include "net.h"
-#define SINGLE_SERVER false
-
 
 int main(int argc, char **argv){
 

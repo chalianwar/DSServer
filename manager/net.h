@@ -13,6 +13,7 @@
 class Link;
 
 #define MAX_NODES 50
+#define SINGLE_SERVER false
 
 typedef enum trace_operator{
 	operator_read = 1,

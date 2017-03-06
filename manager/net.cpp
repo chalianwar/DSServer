@@ -66,17 +66,19 @@ int NetworkServer::main_loop(void) {
 				if (conn) {
 					conn_count++;
 					remote_conn = conn;
-
 					fdes->set(conn->fd(), FDEVENT_IN, 1, conn);
 
-					// perform function
-					// populate the response buffer queue
-					char *data = "ping";
-					Buffer *rsp = new Buffer(data, sizeof(data));
-					conn->omsg_q.push_back(rsp);
-					Fdevents *fdes = get_fdes();
+					// ping to get the node id and track it
+					if (SINGLE_SERVER) {
+						// perform function
+						// populate the response buffer queue
+						char *data = "ping";
+						Buffer *rsp = new Buffer(data, sizeof(data));
+						conn->omsg_q.push_back(rsp);
+						Fdevents *fdes = get_fdes();
 
-					fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+						fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+					}
 				}
 			} else if (fde->events & FDEVENT_IN) { // ali: where we read data from client
 				recv(fde);
