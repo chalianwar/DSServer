@@ -23,7 +23,6 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	// find out if we have recorded this connection already or not
 	// if not then send ping and expect "node:id" in reply
 	if (!conn->conn_recorded) {
-
 		// extract id from the reply
 		if (message.find("node") != std::string::npos) {
 			int node_reply = std::stoi( message.substr(message.find(":") + 1).c_str());
@@ -32,6 +31,8 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 			conn->conn_recorded = true;
 			//return CO_OK;
 		}
+		// no other reason for connection to be not set
+		conn->conn_recorded = true;
 	}
 
 	return CO_OK;

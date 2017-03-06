@@ -16,6 +16,20 @@ NetworkServer::NetworkServer(void) {
 	client_conn->conn_recorded = false;
 }
 
+NetworkServer::NetworkServer(const std::string ip, uint32_t port) {
+
+	fdes = new Fdevents();
+
+	client_conn = Link::listen(ip.c_str(), port);
+	if(client_conn == NULL){
+		fprintf(stderr, "error opening server socket! %s\n", strerror(errno));
+		exit(1);
+	}
+	conn_count = 0;
+	client_conn->conn_recorded = false;
+
+}
+
 Link *NetworkServer::accept_conn() {
 	Link *conn = client_conn->accept();
 	if (conn == NULL) {
@@ -51,6 +65,8 @@ int NetworkServer::main_loop(void) {
 				Link *conn = accept_conn();
 				if (conn) {
 					conn_count++;
+					remote_conn = conn;
+
 					fdes->set(conn->fd(), FDEVENT_IN, 1, conn);
 
 					// perform function
@@ -74,7 +90,17 @@ int NetworkServer::main_loop(void) {
 }
 
 //Send the data to the node
-rstatus_t NetworkServer::send_data_obj (char bts[], uint32_t node_id) {
+rstatus_t NetworkServer::send_data_obj (char bts[]) {
+
+		Buffer *rsp = new Buffer(bts, sizeof(bts));
+		remote_conn->omsg_q.push_back(rsp);
+		Fdevents *fdes = get_fdes();
+		fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);
+}
+
+
+//Send the data to the node - we map each connection as single serving all SSDs
+rstatus_t NetworkServer::send_data_obj_single_server (char bts[], uint32_t node_id) {
 
 		Buffer *rsp = new Buffer(bts, sizeof(bts));
 		nodes[node_id]->omsg_q.push_back(rsp);

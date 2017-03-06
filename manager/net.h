@@ -4,6 +4,11 @@
 #include "server.h"
 #include "link.h"
 #include "fde.h"
+//#include <strings.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <unistd.h>
+#include <string>
 
 class Link;
 
@@ -42,6 +47,7 @@ struct data_object{
 class NetworkServer {
 	public:
 		NetworkServer();
+		NetworkServer(const std::string ip, uint32_t port);
 		rstatus_t main_loop();
 		Link *proxy_listen();
 		Link *connect_to_server();
@@ -51,12 +57,13 @@ class NetworkServer {
 		Fdevents *get_fdes();
 		rstatus_t proc_info(Link *link);
 		Link *nodes[MAX_NODES];
-		rstatus_t send_data_obj(char bts[], uint32_t node_id);
+		rstatus_t send_data_obj(char bts[]);
+		rstatus_t send_data_obj_single_server(char bts[], uint32_t node_id);
 		void convert_dataobj(data_object dobj, char* outStr);
 	private:
 		Fdevents *fdes;
 		Link *client_conn;
-		Link *server_conn;
+		Link *remote_conn;
 		int conn_count;
 };
 
