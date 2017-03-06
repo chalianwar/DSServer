@@ -2,6 +2,7 @@
 #include "server.h"
 #include "net.h"
 #include "resp.h"
+#include "dataobj.pb.h"
 
 NetworkServer::NetworkServer(void) {
 	fdes = new Fdevents();
@@ -71,6 +72,43 @@ int NetworkServer::main_loop(void) {
 
 	return CO_OK;
 }
+
+//Send the data to the node
+rstatus_t NetworkServer::send_data_obj (char bts[], uint32_t node_id) {
+
+		Buffer *rsp = new Buffer(bts, sizeof(bts));
+		nodes[node_id]->omsg_q.push_back(rsp);
+		Fdevents *fdes = get_fdes();
+		fdes->set(nodes[node_id]->fd(), FDEVENT_OUT, 1, nodes[node_id]);
+}
+
+//Convert the data_object to transferable char *
+void convert_dataobj(data_object dobj, char* outStr) {
+
+	dataobj::Message d;
+	d.set_ec_index(dobj.ec_index);
+	d.set_obj_no(dobj.obj_no);
+	d.set_offset(dobj.offset);
+	d.set_length(dobj.length);
+	d.set_operator_t(dobj.operator_t == dataobj::Message::operator_write ? dataobj::Message::operator_write :
+			(dobj.operator_t == dataobj::Message::operator_read ? dataobj::Message::operator_read :
+							dataobj::Message::operator_trim));
+	d.set_timestamp(dobj.timestamp);
+	d.set_flash_utilization(dobj.flash_utilization);
+	d.set_flash_victim_utilization(dobj.flash_victim_utilization);
+	d.set_flash_full_blk_utilization(dobj.flash_full_blk_utilization);
+	d.set_rq_type(dobj.rq_type == dataobj::Message::need_flash_info ? dataobj::Message::need_flash_info :
+			(dobj.rq_type == dataobj::Message::not_need_flash_info ? dataobj::Message::not_need_flash_info :
+							dataobj::Message::shut_cluster));
+	d.set_node_nr_erases(dobj.node_nr_erases);
+	d.set_local_log_utilization(dobj.local_log_utilization);
+
+	std::string dobj2;
+	d.SerializeToString(&dobj2);
+	char bts[dobj2.length()];
+	strcpy(bts, dobj2.c_str());
+}
+
 
 /*
  * ali: wrapper calling registered funcs

@@ -9,25 +9,6 @@ class Link;
 
 #define MAX_NODES 50
 
-class NetworkServer {
-	public:
-		NetworkServer();
-		rstatus_t main_loop();
-		Link *proxy_listen();
-		Link *connect_to_server();
-		Link *accept_conn();
-		rstatus_t send(const Fdevent *fde);
-		rstatus_t recv(const Fdevent *fde);
-		Fdevents *get_fdes();
-		rstatus_t proc_info(Link *link);
-		Link *nodes[MAX_NODES];
-	private:
-		Fdevents *fdes;
-		Link *client_conn;
-		Link *server_conn;
-		int conn_count;
-};
-
 typedef enum trace_operator{
 	operator_read = 1,
   		operator_write,
@@ -56,6 +37,27 @@ struct data_object{
 
 	uint32_t          node_nr_erases;
 	float             local_log_utilization;
+};
+
+class NetworkServer {
+	public:
+		NetworkServer();
+		rstatus_t main_loop();
+		Link *proxy_listen();
+		Link *connect_to_server();
+		Link *accept_conn();
+		rstatus_t send(const Fdevent *fde);
+		rstatus_t recv(const Fdevent *fde);
+		Fdevents *get_fdes();
+		rstatus_t proc_info(Link *link);
+		Link *nodes[MAX_NODES];
+		rstatus_t send_data_obj(char bts[], uint32_t node_id);
+		void convert_dataobj(data_object dobj, char* outStr);
+	private:
+		Fdevents *fdes;
+		Link *client_conn;
+		Link *server_conn;
+		int conn_count;
 };
 
 #endif
