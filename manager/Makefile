@@ -24,7 +24,7 @@ OBJS = fde.o link.o msg.o net.o server.o resp.o dataobj.pb.o
 TARGET = manager
 UTIL_OBJS = ./util/log.o ./util/config.o ./util/bytes.o ./util/sorted_set.o ./util/app.o
 UTIL_LIB = ./util/libutil.a
-LIBS= -lprotobuf
+LIBS= -lprotobuf -lpthread
 
 
 dbg: OPTS += -O0

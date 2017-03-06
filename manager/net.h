@@ -4,11 +4,11 @@
 #include "server.h"
 #include "link.h"
 #include "fde.h"
-//#include <strings.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <unistd.h>
 #include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <thread>
 
 class Link;
 
@@ -61,11 +61,13 @@ class NetworkServer {
 		rstatus_t send_data_obj(char bts[]);
 		rstatus_t send_data_obj_single_server(char bts[], uint32_t node_id);
 		void convert_dataobj(data_object dobj, char* outStr);
+		bool start_main();
 	private:
 		Fdevents *fdes;
 		Link *client_conn;
 		Link *remote_conn;
 		int conn_count;
+		std::thread *main_loop_thread;
 };
 
 #endif

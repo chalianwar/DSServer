@@ -47,6 +47,14 @@ Link *NetworkServer::accept_conn() {
 	return conn;
 }
 
+bool NetworkServer::start_main(){
+
+	main_loop_thread = new std::thread(&NetworkServer::main_loop, this);
+	if(main_loop_thread != NULL)
+		return true;
+	return false;
+}
+
 int NetworkServer::main_loop(void) {
 
 	const Fdevents::events_t *events;
