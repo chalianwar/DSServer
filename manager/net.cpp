@@ -2,7 +2,7 @@
 #include "server.h"
 #include "net.h"
 #include "resp.h"
-#include "dataobj.pb.h"
+
 
 NetworkServer::NetworkServer(void) {
 	fdes = new Fdevents();
@@ -119,7 +119,7 @@ rstatus_t NetworkServer::send_data_obj_single_server (char bts[], uint32_t node_
 }
 
 //Convert the data_object to transferable char *
-void convert_dataobj(data_object dobj, char* outStr) {
+void NetworkServer::convert_dataobj(data_object dobj, char* outStr) {
 
 	dataobj::Message d;
 	d.set_ec_index(dobj.ec_index);
