@@ -30,6 +30,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		dataobj::Response d;
 		d.ParseFromString(token);
 		std::string index = d.rsp();
+		fprintf(stderr, "Response: %s\n", index);
 	}
 
 	return CO_OK;
@@ -51,7 +52,7 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 	if (smsg == NULL) {
 		return CO_OK;  // yue: nothing to send
 	}
-	fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
+	//fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
 
 //	std::string token = smsg->data();
 //	dataobj::Message d;

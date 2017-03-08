@@ -67,7 +67,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	std::string token;
 	while ((pos = message.find(delimiter)) != std::string::npos) {
 	    token = message.substr(0, pos);
-	    fprintf(stderr, "sub messages: %s\n sub message size %d\n", token, token.size());
+	    fprintf(stderr, "sub messages: %s - sub message size %d\n", token, token.size());
 		dataobj::Message dmessage;
 		dmessage.ParseFromString(token);
 		int index = dmessage.ec_index();
@@ -79,6 +79,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		std::string dresponse= "ack";
 		drsp.set_rsp(dresponse);
 		drsp.SerializeToString(&dobj);
+		dobj.append(std::to_string(global_req_number));
 		dobj.append(std::to_string(MAGIC).c_str());
 		char bts[dobj.length()];
 		strcpy(bts, dobj.c_str());
@@ -90,6 +91,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		conn->omsg_q.push_back(rsp);
 		Fdevents *fdes = proxy->get_fdes();
 		fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+		global_req_number++;
 	}
 
 	return CO_OK;
@@ -112,7 +114,7 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 		return CO_OK;  // yue: nothing to send
 	}
 
-	fprintf(stderr, "rsp_send: %s\n", smsg->data());
+	//fprintf(stderr, "rsp_send: %s\n", smsg->data());
 	int len = conn->msg_write(smsg);
 	if (len <= 0) {
 		fprintf(stderr, "fd: %d, write: %d, delete link", conn->fd(), len);
