@@ -10,10 +10,11 @@
 #include <unistd.h>
 #include <thread>
 #include "dataobj.pb.h"
+const uint32_t MAGIC = 0x06121983;
 
 class Link;
 
-#define MAX_NODES 50
+#define MAX_NODES 1
 #define SINGLE_SERVER false
 
 typedef enum trace_operator{
@@ -59,14 +60,16 @@ class NetworkServer {
 		Fdevents *get_fdes();
 		rstatus_t proc_info(Link *link);
 		Link *nodes[MAX_NODES];
-		rstatus_t send_data_obj(char bts[]);
+		rstatus_t send_data_obj(data_object test);
 		rstatus_t send_data_obj_single_server(char bts[], uint32_t node_id);
 		void convert_dataobj(data_object dobj, char* outStr);
 		bool start_main();
+		bool is_connected;
+		Link *remote_conn;
 	private:
 		Fdevents *fdes;
 		Link *client_conn;
-		Link *remote_conn;
+
 		int conn_count;
 		std::thread *main_loop_thread;
 };

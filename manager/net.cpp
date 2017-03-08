@@ -14,6 +14,7 @@ NetworkServer::NetworkServer(void) {
 	}
 	conn_count = 0;
 	client_conn->conn_recorded = false;
+	is_connected = false;
 }
 
 NetworkServer::NetworkServer(const std::string ip, uint32_t port) {
@@ -47,6 +48,7 @@ Link *NetworkServer::accept_conn() {
 	return conn;
 }
 
+
 bool NetworkServer::start_main(){
 
 	main_loop_thread = new std::thread(&NetworkServer::main_loop, this);
@@ -75,7 +77,7 @@ int NetworkServer::main_loop(void) {
 					conn_count++;
 					remote_conn = conn;
 					fdes->set(conn->fd(), FDEVENT_IN, 1, conn);
-
+					is_connected = true;
 					// ping to get the node id and track it
 					if (SINGLE_SERVER) {
 						// perform function
@@ -100,12 +102,37 @@ int NetworkServer::main_loop(void) {
 }
 
 //Send the data to the node
-rstatus_t NetworkServer::send_data_obj (char bts[]) {
+rstatus_t NetworkServer::send_data_obj (data_object test) {
 
-		Buffer *rsp = new Buffer(bts, sizeof(bts));
-		remote_conn->omsg_q.push_back(rsp);
-		Fdevents *fdes = get_fdes();
-		fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);
+	dataobj::Message d;
+	d.set_ec_index(test.ec_index);
+	d.set_obj_no(test.obj_no);
+	d.set_offset(test.offset);
+	d.set_length(test.length);
+	d.set_operator_t(test.operator_t == dataobj::Message::operator_write ? dataobj::Message::operator_write :
+			(test.operator_t == dataobj::Message::operator_read ? dataobj::Message::operator_read :
+							dataobj::Message::operator_trim));
+	d.set_timestamp(test.timestamp);
+	d.set_flash_utilization(test.flash_utilization);
+	d.set_flash_victim_utilization(test.flash_victim_utilization);
+	d.set_flash_full_blk_utilization(test.flash_full_blk_utilization);
+	d.set_rq_type(test.rq_type == dataobj::Message::need_flash_info ? dataobj::Message::need_flash_info :
+			(test.rq_type == dataobj::Message::not_need_flash_info ? dataobj::Message::not_need_flash_info :
+							dataobj::Message::shut_cluster));
+	d.set_node_nr_erases(test.node_nr_erases);
+	d.set_local_log_utilization(test.local_log_utilization);
+
+	std::string dobj2;
+	d.SerializeToString(&dobj2);
+	char bts[dobj2.length()];
+	strcpy(bts, dobj2.c_str());
+
+	Buffer *rsp = new Buffer(bts, sizeof(bts));
+	fprintf(stderr, "req_size: %d\n", sizeof(bts));
+	//rsp->append(MAGIC);
+	remote_conn->omsg_q.push_back(rsp);
+	Fdevents *fdes = get_fdes();
+	fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);
 }
 
 

@@ -18,27 +18,40 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	fprintf(stderr, "req_recv: %s\n", msg->data());
 	const std::string message = msg->data();
 
-	// if we have not replied yet the node id reply it now if message is ping
-	if (!conn->is_recorded) {
-		char *data;
-		if (message.find("ping") != std::string::npos) {
-			data = "node:1";
-			conn->is_recorded = true;
-		}
-		else {
-			data = "pong";
-		}
-		// populate the response buffer queue
-		Buffer *rsp = new Buffer(data, sizeof(data));
-		conn->omsg_q.push_back(rsp);
-		Fdevents *fdes = proxy->get_fdes();
-		fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
-	} else {
+	fprintf(stderr, "===SIZE=== %d && ===Message size===\n", sizeof(dataobj::Message), sizeof(msg->data()));
+	if (message.size() > sizeof(dataobj::Message)) {
+
+		fprintf(stderr, "req_recv: %d\n", sizeof(dataobj::Message));
+	}
+
+//	// if we have not replied yet the node id reply it now if message is ping
+//	if (!conn->is_recorded) {
+//		char *data;
+//		if (message.find("ping") != std::string::npos) {
+//			data = "node:1";
+//			conn->is_recorded = true;
+//			// populate the response buffer queue
+//			Buffer *rsp = new Buffer(data, sizeof(data));
+//			conn->omsg_q.push_back(rsp);
+//			Fdevents *fdes = proxy->get_fdes();
+//			fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+//		}
+//		else {
+//			data = "pong";
+//			// populate the response buffer queue
+//			Buffer *rsp = new Buffer(data, sizeof(data));
+//			conn->omsg_q.push_back(rsp);
+//			Fdevents *fdes = proxy->get_fdes();
+//			fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+//		}
+//		conn->is_recorded = true;
+//	}
+
 		dataobj::Message d;
 		d.ParseFromString(message);
 		int index = d.ec_index();
+		fprintf(stderr, "--------------- INDEX: %d\n", index);
 
-	}
 
 	return CO_OK;
 }
