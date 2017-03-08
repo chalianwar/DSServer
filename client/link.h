@@ -101,6 +101,8 @@ class Link{
 		const std::vector<Bytes>* parse();  // yue: originally named recv()
 		// wait until a response received.
 		const std::vector<Bytes>* response();
+		// break up the message according to MAGIC number
+		const std::vector<Bytes> msg_breakup(std::string msg);
 
 		// need to call flush to ensure all data has flush into network
 		int send(const std::vector<std::string> &packet);

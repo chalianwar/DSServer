@@ -35,80 +35,53 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	fprintf(stderr, "req_recv: %s\n req_size: %d\n", msg->data(), msg->size());
 	const std::string message = msg->data();
 
+//	const std::vector<Bytes> messages = conn->msg_breakup(message);
+//
+//	for (std::vector<Bytes>::const_iterator i = messages.begin(); i != messages.end(); i++) {
+//
+//				dataobj::Message dmessage;
+//				dmessage.ParseFromString(i->data());
+//				int index = dmessage.ec_index();
+//				fprintf(stderr, "--------------- INDEX: %d\n", index);
+//
+//				// populate the response buffer queue
+//				// reply back with ack.
+//				std::string dobj;
+//				dataobj::Response drsp;
+//				std::string dresponse= "ack";
+//				drsp.set_rsp(dresponse);
+//				drsp.SerializeToString(&dobj);
+//				dobj.append(std::to_string(MAGIC).c_str());
+//				char bts[dobj.length()];
+//				strcpy(bts, dobj.c_str());
+//				std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
+//				rsp->append(bts, sizeof(bts));
+//				conn->omsg_q.push_back(rsp);
+//				Fdevents *fdes = proxy->get_fdes();
+//				fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
+//	}
+
+
 	std::string delimiter = std::to_string(MAGIC);
-//	std::vector<std::string> v  = split(message, delimiter.c_str());
-//
-//	for (std::vector<std::string>::const_iterator i = v.begin(); i != v.end(); i++) {
-//		std::string a = *i;
-//		dataobj::Message d;
-//		d.ParseFromString(a);
-//		int index = d.ec_index();
-//		fprintf(stderr, "--------------- INDEX: %d\n", index);
-//
-//	}
-
-
-//	while (msg->size()) {
-//			char *curr_ptr = msg->data();
-//			conn->msg_parse(msg);
-//			int req_sz = msg->size_diff();
-//			Buffer *req = new Buffer(req_sz);
-//			req->append(curr_ptr, req_sz);
-//			conn->clear_recv_data();
-//
-//			size_t pos = 0;
-//			std::string token;
-//		    fprintf(stderr, "sub messages: %s\n sub message size %d\n", token, token.size());
-//			dataobj::Message d;
-//			d.ParseFromString(token);
-//			int index = d.ec_index();
-//			fprintf(stderr, "--------------- INDEX: %d\n", index);
-//
-//			std::string dobj;
-//			dataobj::Response drsp;
-//			std::string dresponse= "pong";
-//			drsp.set_rsp(dresponse);
-//			drsp.SerializeToString(&dobj);
-//			dobj.append(std::to_string(MAGIC).c_str());
-//			char bts[dobj.length()];
-//			strcpy(bts, dobj.c_str());
-//
-//	//		//dresponse.append(std::to_string(global_req_number).c_str());
-//	//		char bts[dresponse.length()];
-//	//		strcpy(bts, dresponse.c_str());
-//
-//			// populate the response buffer queue
-//			Buffer *rsp = new Buffer(bts, sizeof(bts));
-//			conn->omsg_q.push_back(rsp);
-//			Fdevents *fdes = proxy->get_fdes();
-//			fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
-//	}
-
-
-
 	size_t pos = 0;
 	std::string token;
 	while ((pos = message.find(delimiter)) != std::string::npos) {
 	    token = message.substr(0, pos);
 	    fprintf(stderr, "sub messages: %s\n sub message size %d\n", token, token.size());
-		dataobj::Message d;
-		d.ParseFromString(token);
-		int index = d.ec_index();
-		fprintf(stderr, "--------------- INDEX: %d\n", index);
+		dataobj::Message dmessage;
+		dmessage.ParseFromString(token);
+		int index = dmessage.ec_index();
+		fprintf(stderr, "INDEX: %d\n", index);
 		message.erase(0, pos + delimiter.length());
 
 		std::string dobj;
 		dataobj::Response drsp;
-		std::string dresponse= "pong";
+		std::string dresponse= "ack";
 		drsp.set_rsp(dresponse);
 		drsp.SerializeToString(&dobj);
 		dobj.append(std::to_string(MAGIC).c_str());
 		char bts[dobj.length()];
 		strcpy(bts, dobj.c_str());
-
-//		//dresponse.append(std::to_string(global_req_number).c_str());
-//		char bts[dresponse.length()];
-//		strcpy(bts, dresponse.c_str());
 
 		// populate the response buffer queue
 		//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
@@ -117,26 +90,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		conn->omsg_q.push_back(rsp);
 		Fdevents *fdes = proxy->get_fdes();
 		fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
-
 	}
-	//fprintf(stderr, "sub messages: %s\n", message);
-
-//	// if we have not replied yet the node id reply it now if message is ping
-//	if (!conn->is_recorded) {
-//		char *data;
-//		if (message.find("ping") != std::string::npos) {
-//			data = "node:1";
-//			conn->is_recorded = true;
-//			// populate the response buffer queue
-//			Buffer *rsp = new Buffer(data, sizeof(data));
-//			conn->omsg_q.push_back(rsp);
-//			Fdevents *fdes = proxy->get_fdes();
-//			fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
-//		}
-//		else {
-//		}
-//		conn->is_recorded = true;
-//	}
 
 	return CO_OK;
 }

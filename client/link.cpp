@@ -18,6 +18,7 @@ found in the LICENSE file.
 int Link::min_recv_buf = 8 * 1024;
 int Link::min_send_buf = 8 * 1024;
 
+const uint32_t MAGIC = 0x06121983;
 
 Link::Link(){
 	sock = -1;
@@ -350,6 +351,19 @@ int Link::flush(){
 		len += ret;
 	}
 	return len;
+}
+
+const std::vector<Bytes> Link::msg_breakup(std::string msg) {
+
+	std::string delimiter = std::to_string(MAGIC);
+	size_t pos = 0;
+	std::string token;
+	while ((pos = msg.find(delimiter)) != std::string::npos) {
+	    token = msg.substr(0, pos);
+		recv_data.push_back(token);
+		msg.erase(0, pos + delimiter.length());
+	}
+	return recv_data;
 }
 
 /*
