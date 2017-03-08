@@ -13,7 +13,7 @@ NetworkServer::NetworkServer(void) {
 	}
 
 	server_conn->set_nw_func();
-	server_conn->is_recorded = false;
+	server_conn->conn_recorded = false;
 }
 
 Link *NetworkServer::accept_conn() {

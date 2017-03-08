@@ -112,7 +112,8 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 
 		// populate the response buffer queue
 		//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
-		std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(&bts[0], sizeof(bts));
+		std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
+		rsp->append(bts, sizeof(bts));
 		conn->omsg_q.push_back(rsp);
 		Fdevents *fdes = proxy->get_fdes();
 		fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);

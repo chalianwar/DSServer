@@ -131,10 +131,8 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	strcpy(bts, dobj.c_str());
 
 	fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
-	//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
-	//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(int(sizeof(bts)));
-	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(&bts[0], sizeof(bts));
-
+	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
+	rsp->append(bts, sizeof(bts));
 
 	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
 	remote_conn->omsg_q.push_back(rsp);
