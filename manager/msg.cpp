@@ -30,11 +30,8 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		dataobj::Response d;
 		d.ParseFromString(token);
 		std::string index = d.rsp();
-		fprintf(stderr, "--------------- INDEX: %s\n", index);
 	}
 
-
-	//free(msg);
 	return CO_OK;
 }
 
@@ -56,13 +53,11 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 	}
 	fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
 
-
 //	std::string token = smsg->data();
 //	dataobj::Message d;
 //	d.ParseFromString(token);
 //	int index = d.ec_index();
 //	fprintf(stderr, "--------------- INDEX: %d\n", index);
-
 
 	int len = conn->msg_write(smsg);
 	if (len <= 0) {

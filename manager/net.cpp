@@ -130,7 +130,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	char bts[dobj.length()];
 	strcpy(bts, dobj.c_str());
 
-	fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
+	//fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
 	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
 	rsp->append(bts, sizeof(bts));
 

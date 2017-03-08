@@ -24,7 +24,7 @@ int main(int argc, char **argv){
 
 		wait_till_all_connected(proxies);
 
-		for (int k = 1; k <4; k++) {
+		for (int k = 0; k <100; k++) {
 		data_object test;
 		test.ec_index = k * k;
 		test.obj_no = 23 +  k * k; //obj_no
