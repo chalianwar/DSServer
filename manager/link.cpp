@@ -28,17 +28,12 @@ Link::Link(){
 	auth = false;
 	ignore_key_range = false;
 
-	input = new Buffer(INIT_BUFFER_SIZE);
-	output = new Buffer(INIT_BUFFER_SIZE);
+		input = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
+		output = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
+
 }
 
 Link::~Link(){
-	if(input){
-		delete input;
-	}
-	if(output){
-		delete output;
-	}
 	this->close();
 }
 
@@ -236,8 +231,8 @@ int Link::read(){
 	return ret;
 }
 
-Buffer *Link::msg_read(){
-	Buffer *msg = new Buffer(INIT_BUFFER_SIZE);
+std::shared_ptr<Buffer> Link::msg_read(){
+	std::shared_ptr<Buffer> msg = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
 	if(msg->total() == INIT_BUFFER_SIZE){
 		msg->grow();
 	}
@@ -309,7 +304,7 @@ int Link::write(){
 	return ret;
 }
 
-int Link::msg_write(Buffer *smsg){
+int Link::msg_write(std::shared_ptr<Buffer> smsg){
 	if(smsg->total() == INIT_BUFFER_SIZE){
 		smsg->grow();
 	}

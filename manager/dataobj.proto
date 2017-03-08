@@ -24,3 +24,8 @@ message Message {
 	required uint32          node_nr_erases = 11;
 	required float             local_log_utilization = 12;
 }
+
+
+message Response {
+	required string rsp = 1;
+}

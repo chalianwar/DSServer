@@ -20,7 +20,7 @@ CPPFLAGS = -c -std=c++11 $(INC) $(OPTS) $(DEBUG) -D_LARGEFILE_SOURCE \
 	-D_FILE_OFFSET_BITS=64 -D_LARGE_FILE_API -D_LARGEFILE64_SOURCE \
 	-D_GNU_SOURCE -D__STDC_FORMAT_MACROS -fstrict-aliasing
 	
-OBJS = fde.o link.o msg.o net.o server.o resp.o dataobj.pb.o
+OBJS = fde.o link.o msg.o net.o server.o resp.o dataobj.pb.o str.o
 TARGET = manager
 UTIL_OBJS = ./util/log.o ./util/config.o ./util/bytes.o ./util/sorted_set.o ./util/app.o
 UTIL_LIB = ./util/libutil.a
@@ -86,6 +86,9 @@ server.o: server.cpp net.h
 	$(CPP) $(CPPFLAGS) $<
 
 resp.o: resp.cpp resp.h
+	$(CPP) $(CPPFLAGS) $<
+
+str.o: str.cpp str.h
 	$(CPP) $(CPPFLAGS) $<
 
 #valgrind:

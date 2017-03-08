@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <thread>
 #include "dataobj.pb.h"
+#include <string>
+
 const uint32_t MAGIC = 0x06121983;
 
 class Link;

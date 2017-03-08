@@ -35,6 +35,7 @@ void protobuf_AssignDesc_dataobj_2eproto();
 void protobuf_ShutdownFile_dataobj_2eproto();
 
 class Message;
+class Response;
 
 enum Message_trace_operator_t {
   Message_trace_operator_t_operator_read = 1,
@@ -314,6 +315,90 @@ class Message : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static Message* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Response : public ::google::protobuf::Message {
+ public:
+  Response();
+  virtual ~Response();
+
+  Response(const Response& from);
+
+  inline Response& operator=(const Response& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Response& default_instance();
+
+  void Swap(Response* other);
+
+  // implements Message ----------------------------------------------
+
+  Response* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Response& from);
+  void MergeFrom(const Response& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string rsp = 1;
+  inline bool has_rsp() const;
+  inline void clear_rsp();
+  static const int kRspFieldNumber = 1;
+  inline const ::std::string& rsp() const;
+  inline void set_rsp(const ::std::string& value);
+  inline void set_rsp(const char* value);
+  inline void set_rsp(const char* value, size_t size);
+  inline ::std::string* mutable_rsp();
+  inline ::std::string* release_rsp();
+  inline void set_allocated_rsp(::std::string* rsp);
+
+  // @@protoc_insertion_point(class_scope:dataobj.Response)
+ private:
+  inline void set_has_rsp();
+  inline void clear_has_rsp();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* rsp_;
+  friend void  protobuf_AddDesc_dataobj_2eproto();
+  friend void protobuf_AssignDesc_dataobj_2eproto();
+  friend void protobuf_ShutdownFile_dataobj_2eproto();
+
+  void InitAsDefaultInstance();
+  static Response* default_instance_;
 };
 // ===================================================================
 
@@ -610,6 +695,86 @@ inline void Message::set_local_log_utilization(float value) {
   set_has_local_log_utilization();
   local_log_utilization_ = value;
   // @@protoc_insertion_point(field_set:dataobj.Message.local_log_utilization)
+}
+
+// -------------------------------------------------------------------
+
+// Response
+
+// required string rsp = 1;
+inline bool Response::has_rsp() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Response::set_has_rsp() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Response::clear_has_rsp() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Response::clear_rsp() {
+  if (rsp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    rsp_->clear();
+  }
+  clear_has_rsp();
+}
+inline const ::std::string& Response::rsp() const {
+  // @@protoc_insertion_point(field_get:dataobj.Response.rsp)
+  return *rsp_;
+}
+inline void Response::set_rsp(const ::std::string& value) {
+  set_has_rsp();
+  if (rsp_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    rsp_ = new ::std::string;
+  }
+  rsp_->assign(value);
+  // @@protoc_insertion_point(field_set:dataobj.Response.rsp)
+}
+inline void Response::set_rsp(const char* value) {
+  set_has_rsp();
+  if (rsp_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    rsp_ = new ::std::string;
+  }
+  rsp_->assign(value);
+  // @@protoc_insertion_point(field_set_char:dataobj.Response.rsp)
+}
+inline void Response::set_rsp(const char* value, size_t size) {
+  set_has_rsp();
+  if (rsp_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    rsp_ = new ::std::string;
+  }
+  rsp_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:dataobj.Response.rsp)
+}
+inline ::std::string* Response::mutable_rsp() {
+  set_has_rsp();
+  if (rsp_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    rsp_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:dataobj.Response.rsp)
+  return rsp_;
+}
+inline ::std::string* Response::release_rsp() {
+  clear_has_rsp();
+  if (rsp_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = rsp_;
+    rsp_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void Response::set_allocated_rsp(::std::string* rsp) {
+  if (rsp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete rsp_;
+  }
+  if (rsp) {
+    set_has_rsp();
+    rsp_ = rsp;
+  } else {
+    clear_has_rsp();
+    rsp_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:dataobj.Response.rsp)
 }
 
 

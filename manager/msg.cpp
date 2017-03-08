@@ -8,7 +8,7 @@
 
 
 rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
-	Buffer *msg = conn->msg_read();
+	std::shared_ptr<Buffer> msg = conn->msg_read();
 	if (msg == NULL) {
 		fprintf(stderr, "fd: %d, read failed, delete link", conn->fd());
 		conn->mark_error();
@@ -18,23 +18,23 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	}
 
 	std::string message = msg->data();
-	fprintf(stderr, "req_recv: %s\n", msg->data());
+	fprintf(stderr, "req_recv: %s\n req_size: %d\n", msg->data(), msg->size());
 
-	// find out if we have recorded this connection already or not
-	// if not then send ping and expect "node:id" in reply
-	if (!conn->conn_recorded) {
-		// extract id from the reply
-		if (message.find("node") != std::string::npos) {
-			int node_reply = std::stoi( message.substr(message.find(":") + 1).c_str());
-			fprintf(stderr, "Node: %d\n",std::stoi( message.substr(message.find(":") + 1).c_str() ));
-			proxy->nodes[node_reply] = conn;
-			conn->conn_recorded = true;
-			//return CO_OK;
-		}
-		// no other reason for connection to be not set
-		conn->conn_recorded = true;
+	std::string delimiter = std::to_string(MAGIC);
+	size_t pos = 0;
+	std::string token;
+	while ((pos = message.find(delimiter)) != std::string::npos) {
+	    token = message.substr(0, pos);
+	    fprintf(stderr, "sub messages: %s\n", token);
+	    message.erase(0, pos + delimiter.length());
+		dataobj::Response d;
+		d.ParseFromString(token);
+		std::string index = d.rsp();
+		fprintf(stderr, "--------------- INDEX: %s\n", index);
 	}
 
+
+	//free(msg);
 	return CO_OK;
 }
 
@@ -42,7 +42,7 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 
 	// pop the response buffer queue
 	// send response back
-	Buffer *smsg;
+	std::shared_ptr<Buffer> smsg;
 	if (!conn->omsg_q.empty()) {
 	smsg = conn->omsg_q.front(); conn->omsg_q.pop_front();
 	}
@@ -54,6 +54,16 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 	if (smsg == NULL) {
 		return CO_OK;  // yue: nothing to send
 	}
+	fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
+
+
+//	std::string token = smsg->data();
+//	dataobj::Message d;
+//	d.ParseFromString(token);
+//	int index = d.ec_index();
+//	fprintf(stderr, "--------------- INDEX: %d\n", index);
+
+
 	int len = conn->msg_write(smsg);
 	if (len <= 0) {
 		fprintf(stderr, "fd: %d, write: %d, delete link", conn->fd(), len);

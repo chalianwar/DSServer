@@ -28,17 +28,12 @@ Link::Link(){
 	auth = false;
 	ignore_key_range = false;
 
-	input = new Buffer(INIT_BUFFER_SIZE);
-	output = new Buffer(INIT_BUFFER_SIZE);
+		input = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
+		output = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
+
 }
 
 Link::~Link(){
-	if(input){
-		delete input;
-	}
-	if(output){
-		delete output;
-	}
 	this->close();
 }
 
@@ -92,46 +87,6 @@ static bool is_ip(const char *host){
 	}   
 	return dot_count == 3;
 }
-
-
-//rstatus_t Link::connect(const char *host, int port){
-//	int sock = -1;
-//
-//	char ip_resolve[INET_ADDRSTRLEN];
-//	if(!is_ip(host)){
-//		struct hostent *hptr = gethostbyname(host);
-//		for(int i=0; hptr && hptr->h_addr_list[i] != NULL; i++){
-//			struct in_addr *addr = (struct in_addr *)hptr->h_addr_list[i];
-//			if(inet_ntop(AF_INET, addr, ip_resolve, sizeof(ip_resolve))){
-//				//printf("resolve %s: %s\n", host, ip_resolve);
-//				host = ip_resolve;
-//				break;
-//			}
-//		}
-//	}
-//
-//	struct sockaddr_in addr;
-//	bzero(&addr, sizeof(addr));
-//	addr.sin_family = AF_INET;
-//	addr.sin_port = htons((short)port);
-//	inet_pton(AF_INET, host, &addr.sin_addr);
-//
-//	if((sock = ::socket(AF_INET, SOCK_STREAM, 0)) == -1){
-//		goto sock_err;
-//	}
-//	if(::connect(sock, (struct sockaddr *)&addr, sizeof(addr)) == -1){
-//		goto sock_err;
-//	}
-//
-//	this->sock = sock;
-//	this->keepalive(true);
-//	return CO_OK;
-//sock_err:
-//	if(sock >= 0){
-//		::close(sock);
-//	}
-//	return CO_ERR;
-//}
 
 Link* Link::connect(const char *host, int port){
 	Link *link;
@@ -276,8 +231,8 @@ int Link::read(){
 	return ret;
 }
 
-Buffer *Link::msg_read(){
-	Buffer *msg = new Buffer(INIT_BUFFER_SIZE);
+std::shared_ptr<Buffer> Link::msg_read(){
+	std::shared_ptr<Buffer> msg = std::make_shared<Buffer>(INIT_BUFFER_SIZE);
 	if(msg->total() == INIT_BUFFER_SIZE){
 		msg->grow();
 	}
@@ -349,7 +304,7 @@ int Link::write(){
 	return ret;
 }
 
-int Link::msg_write(Buffer *smsg){
+int Link::msg_write(std::shared_ptr<Buffer> smsg){
 	if(smsg->total() == INIT_BUFFER_SIZE){
 		smsg->grow();
 	}

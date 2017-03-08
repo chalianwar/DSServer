@@ -24,7 +24,7 @@ int main(int argc, char **argv){
 
 		wait_till_all_connected(proxies);
 
-		for (int k = 0; k <10; k++) {
+		for (int k = 1; k <4; k++) {
 		data_object test;
 		test.ec_index = k * k;
 		test.obj_no = 23 +  k * k; //obj_no
@@ -40,6 +40,7 @@ int main(int argc, char **argv){
 		test.local_log_utilization = 123.456;
 
 		proxies[0]->send_data_obj(test);
+		//sleep(1);
 
 		}
 	}

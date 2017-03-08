@@ -3,9 +3,11 @@ Copyright (c) 2012-2014 The SSDB Authors. All rights reserved.
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 */
-#ifndef UTIL_BYTES_H_
-#define UTIL_BYTES_H_
+#pragma once
 
+#include <memory>
+
+#include "../server.h"
 #include "strings.h"
 //#include "../link.h"
 
@@ -53,6 +55,10 @@ class Bytes{
 			return size_;
 		}
 
+		void reclaim_data() {
+			if (data_)	delete data_;
+		}
+
 		int compare(const Bytes &b) const{
 			const int min_len = (size_ < b.size_) ? size_ : b.size_;
 			int r = memcmp(data_, b.data_, min_len);
@@ -65,6 +71,17 @@ class Bytes{
 
 		std::string String() const{
 			return std::string(data_, size_);
+		}
+
+#if 0
+		std::string *get_String() const{
+			std::string str(data_, size_);
+			return &str;
+		}
+#endif
+
+		std::string *get_new_String() const{
+			return new std::string(data_, size_);
 		}
 
 		int Int() const{
@@ -122,14 +139,27 @@ class Buffer{
 		char *buf;
 		char *data_;
 		int size_;
+		int last_sz;
 		int total_;
 		int origin_total;
 	public:
+		int32_t id;
+		int32_t _count;
 		Link *owner;  // yue
+		bool fwd_to_replicas;
+		uint served_replicas;
+
+
+#ifdef USE_SMART_PTR
+		std::shared_ptr<Buffer> peer;
+#else
 		Buffer *peer; // yue
+#endif
+
+		Link *head; //ali
 
 		Buffer(int total);
-		Buffer(char *ptr, int sz);
+		Buffer(char *ptr, int sz); // yue
 		~Buffer();
 
 		int total() const{ // 缓冲区大小
@@ -144,6 +174,12 @@ class Buffer{
 		char* data() const{
 			return data_;
 		}
+
+		/*
+		char* buf() const{
+			return buf;
+		}
+		*/
 
 		int size() const{
 			return size_;
@@ -166,10 +202,29 @@ class Buffer{
 			data_ += num;
 		}
 
+		void remember_sz(int sz) { // yue
+			last_sz = sz;
+		}
+
+		void reset_dataptr() { // yue
+			size_ = last_sz;
+			data_ = buf;
+		}
+
+		int size_diff() { // yue
+			if(!last_sz >= size_)
+				exit(1);
+			return last_sz - size_;
+		}
+
 		// 保证不改变后半段的数据, 以便使已生成的 Bytes 不失效.
 		void nice();
 		// 扩大缓冲区
 		int grow();
+		// yue: reset the data_ pointer to buf and reset size_ to total
+		void rewind(); 
+		// yue: reset the data_ pointer to buf and reset size_ to sz 
+		void rewind(int sz); 
 
 		std::string stats() const;
 		int read_record(Bytes *s);
@@ -250,6 +305,4 @@ public:
 		return 1 + len;
 	}
 };
-
-#endif
 

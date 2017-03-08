@@ -2,6 +2,7 @@
 #include "server.h"
 #include "net.h"
 #include "resp.h"
+#include <string>
 
 
 NetworkServer::NetworkServer(void) {
@@ -83,7 +84,7 @@ int NetworkServer::main_loop(void) {
 						// perform function
 						// populate the response buffer queue
 						char *data = "ping";
-						Buffer *rsp = new Buffer(data, sizeof(data));
+						std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(data, sizeof(data));
 						conn->omsg_q.push_back(rsp);
 						Fdevents *fdes = get_fdes();
 
@@ -104,32 +105,38 @@ int NetworkServer::main_loop(void) {
 //Send the data to the node
 rstatus_t NetworkServer::send_data_obj (data_object test) {
 
-	dataobj::Message d;
-	d.set_ec_index(test.ec_index);
-	d.set_obj_no(test.obj_no);
-	d.set_offset(test.offset);
-	d.set_length(test.length);
-	d.set_operator_t(test.operator_t == dataobj::Message::operator_write ? dataobj::Message::operator_write :
+	dataobj::Message dmessage;
+	dmessage.set_ec_index(test.ec_index);
+	dmessage.set_obj_no(test.obj_no);
+	dmessage.set_offset(test.offset);
+	dmessage.set_length(test.length);
+	dmessage.set_operator_t(test.operator_t == dataobj::Message::operator_write ? dataobj::Message::operator_write :
 			(test.operator_t == dataobj::Message::operator_read ? dataobj::Message::operator_read :
 							dataobj::Message::operator_trim));
-	d.set_timestamp(test.timestamp);
-	d.set_flash_utilization(test.flash_utilization);
-	d.set_flash_victim_utilization(test.flash_victim_utilization);
-	d.set_flash_full_blk_utilization(test.flash_full_blk_utilization);
-	d.set_rq_type(test.rq_type == dataobj::Message::need_flash_info ? dataobj::Message::need_flash_info :
+	dmessage.set_timestamp(test.timestamp);
+	dmessage.set_flash_utilization(test.flash_utilization);
+	dmessage.set_flash_victim_utilization(test.flash_victim_utilization);
+	dmessage.set_flash_full_blk_utilization(test.flash_full_blk_utilization);
+	dmessage.set_rq_type(test.rq_type == dataobj::Message::need_flash_info ? dataobj::Message::need_flash_info :
 			(test.rq_type == dataobj::Message::not_need_flash_info ? dataobj::Message::not_need_flash_info :
 							dataobj::Message::shut_cluster));
-	d.set_node_nr_erases(test.node_nr_erases);
-	d.set_local_log_utilization(test.local_log_utilization);
+	dmessage.set_node_nr_erases(test.node_nr_erases);
+	dmessage.set_local_log_utilization(test.local_log_utilization);
 
-	std::string dobj2;
-	d.SerializeToString(&dobj2);
-	char bts[dobj2.length()];
-	strcpy(bts, dobj2.c_str());
+	std::string dobj;
+	dmessage.SerializeToString(&dobj);
+	dobj.append(std::to_string(MAGIC).c_str());
 
-	Buffer *rsp = new Buffer(bts, sizeof(bts));
-	fprintf(stderr, "req_size: %d\n", sizeof(bts));
-	//rsp->append(MAGIC);
+	char bts[dobj.length()];
+	strcpy(bts, dobj.c_str());
+
+	fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
+	//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
+	//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(int(sizeof(bts)));
+	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(&bts[0], sizeof(bts));
+
+
+	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
 	remote_conn->omsg_q.push_back(rsp);
 	Fdevents *fdes = get_fdes();
 	fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);
@@ -139,7 +146,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 //Send the data to the node - we map each connection as single serving all SSDs
 rstatus_t NetworkServer::send_data_obj_single_server (char bts[], uint32_t node_id) {
 
-		Buffer *rsp = new Buffer(bts, sizeof(bts));
+		std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
 		nodes[node_id]->omsg_q.push_back(rsp);
 		Fdevents *fdes = get_fdes();
 		fdes->set(nodes[node_id]->fd(), FDEVENT_OUT, 1, nodes[node_id]);

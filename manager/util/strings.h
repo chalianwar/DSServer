@@ -16,6 +16,7 @@ found in the LICENSE file.
 #include <string>
 #include <algorithm>
 
+
 inline static
 int is_empty_str(const char *str){
 	const char *p = str;
@@ -240,22 +241,8 @@ std::string str(const char *s){
 	return std::string(s);
 }
 
-//static inline
-//std::string str(int v){
-//	char buf[21] = {0};
-//	snprintf(buf, sizeof(buf), "%d", v);
-//	return std::string(buf);
-//}
-
 static inline
-std::string str(int32_t v){
-	char buf[21] = {0};
-	snprintf(buf, sizeof(buf), "%d", v);
-	return std::string(buf);
-}
-
-static inline
-std::string str(uint32_t v){
+std::string str(int v){
 	char buf[21] = {0};
 	snprintf(buf, sizeof(buf), "%d", v);
 	return std::string(buf);

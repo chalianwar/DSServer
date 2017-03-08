@@ -25,7 +25,7 @@ class Buffer;
 
 typedef rstatus_t (*link_recv_t)(NetworkServer *, Link *);
 typedef rstatus_t (*link_send_t)(NetworkServer *, Link *);
-typedef void (*link_msgq_t)(Link *, Buffer *);
+typedef void (*link_msgq_t)(Link *, std::shared_ptr<Buffer> *);
 
 class Link{
 	private:
@@ -46,11 +46,12 @@ class Link{
 		bool auth;
 		bool ignore_key_range;
 
-		Buffer *input;
-		Buffer *output;
-		std::deque<Buffer *> imsg_q; // ali
-		std::deque<Buffer *> omsg_q; // ali
-		
+		std::shared_ptr<Buffer> input;
+		std::shared_ptr<Buffer> output;
+
+		std::deque<std::shared_ptr<Buffer>> imsg_q;
+		std::deque<std::shared_ptr<Buffer>> omsg_q;
+
 		double create_time;
 		double active_time;
 
@@ -80,9 +81,9 @@ class Link{
 
 		// read network data info buffer
 		int read();
-		Buffer *msg_read();  // yue
+		std::shared_ptr<Buffer> msg_read();  // yue
 		int write();
-		int msg_write(Buffer *smsg);  // yue
+		int msg_write(std::shared_ptr<Buffer> smsg);  // yue
 		// flush buffered data to network
 		// REQUIRES: nonblock
 		int flush();

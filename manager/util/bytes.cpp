@@ -6,6 +6,8 @@ found in the LICENSE file.
 #include "bytes.h"
 
 Buffer::Buffer(int total){
+	id = -1;
+	_count = 0;
 	size_ = 0;
 	total_ = origin_total = total;
 	buf = (char *)malloc(total);
@@ -33,6 +35,16 @@ void Buffer::nice(){
 		memcpy(buf, data_, size_);
 		data_ = buf;
 	}
+}
+
+void Buffer::rewind() {
+	data_ = buf;
+	size_ = total_;
+}
+
+void Buffer::rewind(int sz) {
+	data_ = buf;
+	size_ = sz;
 }
 
 int Buffer::grow(){ // 扩大缓冲区
