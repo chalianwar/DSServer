@@ -11,6 +11,7 @@
 #include <thread>
 #include "dataobj.pb.h"
 #include <string>
+#include "str.h"
 
 const uint32_t MAGIC = 0x06121983;
 
@@ -47,6 +48,7 @@ struct data_object{
 
 	uint32_t          node_nr_erases;
 	float             local_log_utilization;
+	float			  response_time;
 };
 
 class NetworkServer {
@@ -68,6 +70,7 @@ class NetworkServer {
 		bool start_main();
 		bool is_connected;
 		Link *remote_conn;
+		String *req;
 	private:
 		Fdevents *fdes;
 		Link *client_conn;

@@ -39,7 +39,7 @@ void protobuf_AssignDesc_dataobj_2eproto() {
       "dataobj.proto");
   GOOGLE_CHECK(file != NULL);
   Message_descriptor_ = file->message_type(0);
-  static const int Message_offsets_[12] = {
+  static const int Message_offsets_[14] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, obj_no_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, offset_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, length_),
@@ -52,6 +52,8 @@ void protobuf_AssignDesc_dataobj_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, flash_full_blk_utilization_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, node_nr_erases_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, local_log_utilization_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, request_number_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, response_time_),
   };
   Message_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -67,8 +69,9 @@ void protobuf_AssignDesc_dataobj_2eproto() {
   Message_trace_operator_t_descriptor_ = Message_descriptor_->enum_type(0);
   Message_request_type_t_descriptor_ = Message_descriptor_->enum_type(1);
   Response_descriptor_ = file->message_type(1);
-  static const int Response_offsets_[1] = {
+  static const int Response_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, rsp_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, rsp_time_),
   };
   Response_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -115,7 +118,7 @@ void protobuf_AddDesc_dataobj_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rdataobj.proto\022\007dataobj\"\377\003\n\007Message\022\016\n\006"
+    "\n\rdataobj.proto\022\007dataobj\"\256\004\n\007Message\022\016\n\006"
     "obj_no\030\001 \002(\r\022\016\n\006offset\030\002 \002(\r\022\016\n\006length\030\003"
     " \002(\r\0225\n\noperator_t\030\004 \002(\0162!.dataobj.Messa"
     "ge.trace_operator_t\022\021\n\ttimestamp\030\005 \002(\002\022\020"
@@ -124,12 +127,13 @@ void protobuf_AddDesc_dataobj_2eproto() {
     "ization\030\010 \002(\002\022 \n\030flash_victim_utilizatio"
     "n\030\t \002(\002\022\"\n\032flash_full_blk_utilization\030\n "
     "\002(\002\022\026\n\016node_nr_erases\030\013 \002(\r\022\035\n\025local_log"
-    "_utilization\030\014 \002(\002\"L\n\020trace_operator_t\022\021"
-    "\n\roperator_read\020\001\022\022\n\016operator_write\020\002\022\021\n"
-    "\roperator_trim\020\003\"P\n\016request_type_t\022\023\n\017ne"
-    "ed_flash_info\020\001\022\027\n\023not_need_flash_info\020\002"
-    "\022\020\n\014shut_cluster\020\003\"\027\n\010Response\022\013\n\003rsp\030\001 "
-    "\002(\t", 563);
+    "_utilization\030\014 \002(\002\022\026\n\016request_number\030\r \002"
+    "(\002\022\025\n\rresponse_time\030\016 \001(\002\"L\n\020trace_opera"
+    "tor_t\022\021\n\roperator_read\020\001\022\022\n\016operator_wri"
+    "te\020\002\022\021\n\roperator_trim\020\003\"P\n\016request_type_"
+    "t\022\023\n\017need_flash_info\020\001\022\027\n\023not_need_flash"
+    "_info\020\002\022\020\n\014shut_cluster\020\003\")\n\010Response\022\013\n"
+    "\003rsp\030\001 \002(\t\022\020\n\010rsp_time\030\002 \002(\002", 628);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "dataobj.proto", &protobuf_RegisterTypes);
   Message::default_instance_ = new Message();
@@ -207,6 +211,8 @@ const int Message::kFlashVictimUtilizationFieldNumber;
 const int Message::kFlashFullBlkUtilizationFieldNumber;
 const int Message::kNodeNrErasesFieldNumber;
 const int Message::kLocalLogUtilizationFieldNumber;
+const int Message::kRequestNumberFieldNumber;
+const int Message::kResponseTimeFieldNumber;
 #endif  // !_MSC_VER
 
 Message::Message()
@@ -239,6 +245,8 @@ void Message::SharedCtor() {
   flash_full_blk_utilization_ = 0;
   node_nr_erases_ = 0u;
   local_log_utilization_ = 0;
+  request_number_ = 0;
+  response_time_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -291,7 +299,9 @@ void Message::Clear() {
     rq_type_ = 1;
     flash_utilization_ = 0;
   }
-  ZR_(flash_victim_utilization_, local_log_utilization_);
+  if (_has_bits_[8 / 32] & 16128) {
+    ZR_(flash_victim_utilization_, response_time_);
+  }
 
 #undef OFFSET_OF_FIELD_
 #undef ZR_
@@ -495,6 +505,36 @@ bool Message::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
+        if (input->ExpectTag(109)) goto parse_request_number;
+        break;
+      }
+
+      // required float request_number = 13;
+      case 13: {
+        if (tag == 109) {
+         parse_request_number:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &request_number_)));
+          set_has_request_number();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(117)) goto parse_response_time;
+        break;
+      }
+
+      // optional float response_time = 14;
+      case 14: {
+        if (tag == 117) {
+         parse_response_time:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &response_time_)));
+          set_has_response_time();
+        } else {
+          goto handle_unusual;
+        }
         if (input->ExpectAtEnd()) goto success;
         break;
       }
@@ -586,6 +626,16 @@ void Message::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->local_log_utilization(), output);
   }
 
+  // required float request_number = 13;
+  if (has_request_number()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->request_number(), output);
+  }
+
+  // optional float response_time = 14;
+  if (has_response_time()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(14, this->response_time(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -656,6 +706,16 @@ void Message::SerializeWithCachedSizes(
   // required float local_log_utilization = 12;
   if (has_local_log_utilization()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->local_log_utilization(), target);
+  }
+
+  // required float request_number = 13;
+  if (has_request_number()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->request_number(), target);
+  }
+
+  // optional float response_time = 14;
+  if (has_response_time()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(14, this->response_time(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -744,6 +804,16 @@ int Message::ByteSize() const {
       total_size += 1 + 4;
     }
 
+    // required float request_number = 13;
+    if (has_request_number()) {
+      total_size += 1 + 4;
+    }
+
+    // optional float response_time = 14;
+    if (has_response_time()) {
+      total_size += 1 + 4;
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -809,6 +879,12 @@ void Message::MergeFrom(const Message& from) {
     if (from.has_local_log_utilization()) {
       set_local_log_utilization(from.local_log_utilization());
     }
+    if (from.has_request_number()) {
+      set_request_number(from.request_number());
+    }
+    if (from.has_response_time()) {
+      set_response_time(from.response_time());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -826,7 +902,7 @@ void Message::CopyFrom(const Message& from) {
 }
 
 bool Message::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000fff) != 0x00000fff) return false;
+  if ((_has_bits_[0] & 0x00001fff) != 0x00001fff) return false;
 
   return true;
 }
@@ -845,6 +921,8 @@ void Message::Swap(Message* other) {
     std::swap(flash_full_blk_utilization_, other->flash_full_blk_utilization_);
     std::swap(node_nr_erases_, other->node_nr_erases_);
     std::swap(local_log_utilization_, other->local_log_utilization_);
+    std::swap(request_number_, other->request_number_);
+    std::swap(response_time_, other->response_time_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
@@ -864,6 +942,7 @@ void Message::Swap(Message* other) {
 
 #ifndef _MSC_VER
 const int Response::kRspFieldNumber;
+const int Response::kRspTimeFieldNumber;
 #endif  // !_MSC_VER
 
 Response::Response()
@@ -886,6 +965,7 @@ void Response::SharedCtor() {
   ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   rsp_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  rsp_time_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -924,10 +1004,13 @@ Response* Response::New() const {
 }
 
 void Response::Clear() {
-  if (has_rsp()) {
-    if (rsp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
-      rsp_->clear();
+  if (_has_bits_[0 / 32] & 3) {
+    if (has_rsp()) {
+      if (rsp_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        rsp_->clear();
+      }
     }
+    rsp_time_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -952,6 +1035,21 @@ bool Response::MergePartialFromCodedStream(
             this->rsp().data(), this->rsp().length(),
             ::google::protobuf::internal::WireFormat::PARSE,
             "rsp");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(21)) goto parse_rsp_time;
+        break;
+      }
+
+      // required float rsp_time = 2;
+      case 2: {
+        if (tag == 21) {
+         parse_rsp_time:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &rsp_time_)));
+          set_has_rsp_time();
         } else {
           goto handle_unusual;
         }
@@ -994,6 +1092,11 @@ void Response::SerializeWithCachedSizes(
       1, this->rsp(), output);
   }
 
+  // required float rsp_time = 2;
+  if (has_rsp_time()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->rsp_time(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -1015,6 +1118,11 @@ void Response::SerializeWithCachedSizes(
         1, this->rsp(), target);
   }
 
+  // required float rsp_time = 2;
+  if (has_rsp_time()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->rsp_time(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -1032,6 +1140,11 @@ int Response::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->rsp());
+    }
+
+    // required float rsp_time = 2;
+    if (has_rsp_time()) {
+      total_size += 1 + 4;
     }
 
   }
@@ -1064,6 +1177,9 @@ void Response::MergeFrom(const Response& from) {
     if (from.has_rsp()) {
       set_rsp(from.rsp());
     }
+    if (from.has_rsp_time()) {
+      set_rsp_time(from.rsp_time());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -1081,7 +1197,7 @@ void Response::CopyFrom(const Response& from) {
 }
 
 bool Response::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
   return true;
 }
@@ -1089,6 +1205,7 @@ bool Response::IsInitialized() const {
 void Response::Swap(Response* other) {
   if (other != this) {
     std::swap(rsp_, other->rsp_);
+    std::swap(rsp_time_, other->rsp_time_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

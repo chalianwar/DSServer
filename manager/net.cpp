@@ -3,7 +3,9 @@
 #include "net.h"
 #include "resp.h"
 #include <string>
+#include "str.h"
 
+int global_req_number = 1;
 
 NetworkServer::NetworkServer(void) {
 	fdes = new Fdevents();
@@ -122,22 +124,37 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 							dataobj::Message::shut_cluster));
 	dmessage.set_node_nr_erases(test.node_nr_erases);
 	dmessage.set_local_log_utilization(test.local_log_utilization);
+	dmessage.set_request_number(global_req_number);
+	global_req_number++;
 
-	std::string dobj;
-	dmessage.SerializeToString(&dobj);
-	dobj.append(std::to_string(MAGIC).c_str());
+	std::string dobj = dmessage.SerializeAsString();
 
-	char bts[dobj.length()];
-	strcpy(bts, dobj.c_str());
+	String *req = new String(8);
+	req->append(dobj.size());
+	req->append(dobj.c_str(), dobj.size());
+	std::vector<char> v(req->data(), req->data() + req->size());
+	char* bts = &v[0];
 
 	//fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
-	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
-	rsp->append(bts, sizeof(bts));
+	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts);
+	rsp->append(bts, v.size());
+
+	char *ptr = rsp->data();
+	size_t *sz  = (size_t *)ptr;
+	size_t totalSize = *sz;
+	ptr += sizeof(size_t);
+
+	std::string token(ptr, totalSize);
+	dataobj::Message d;
+	d.ParseFromString(token);
+	int index = d.ec_index();
+	fprintf(stderr, "--------------- INDEX: %d\n", index);
 
 	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
 	remote_conn->omsg_q.push_back(rsp);
 	Fdevents *fdes = get_fdes();
 	fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);
+	delete req;
 }
 
 
