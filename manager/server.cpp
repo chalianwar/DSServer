@@ -24,10 +24,10 @@ int main(int argc, char **argv){
 
 		wait_till_all_connected(proxies);
 
-		for (int k = 0; k <10000; k++) {
+		for (int k = 0; k <1000000; k++) {
 		data_object test;
 		test.ec_index = k * k;
-		test.obj_no = 23 +  k * k; //obj_no
+		test.obj_no = 23 +  k; //obj_no
 		test.offset = 23; //offset in object
 		test.length = 23;  //size in pages
 		test.operator_t = operator_write; //write/read
@@ -39,7 +39,7 @@ int main(int argc, char **argv){
 		test.node_nr_erases = 23;
 		test.local_log_utilization = 123.456;
 		proxies[0]->send_data_obj(test);
-		usleep(10);
+		usleep(100);
 		}
 	}
 
