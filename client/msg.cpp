@@ -34,7 +34,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		d.ParseFromString(token);
 
 		data_object dobj = convert_to_dobj(d);
-		fprintf(stderr, "--------------- Request Number: %f\n", dobj.request_number);
+		fprintf(stderr, "--------------- Request Number: %d\n", dobj.request_number);
 		ptr += totalSize;
 		parsed += totalSize;
 

@@ -128,7 +128,7 @@ void protobuf_AddDesc_dataobj_2eproto() {
     "n\030\t \002(\002\022\"\n\032flash_full_blk_utilization\030\n "
     "\002(\002\022\026\n\016node_nr_erases\030\013 \002(\r\022\035\n\025local_log"
     "_utilization\030\014 \002(\002\022\026\n\016request_number\030\r \002"
-    "(\002\022\025\n\rresponse_time\030\016 \001(\002\"L\n\020trace_opera"
+    "(\004\022\025\n\rresponse_time\030\016 \001(\r\"L\n\020trace_opera"
     "tor_t\022\021\n\roperator_read\020\001\022\022\n\016operator_wri"
     "te\020\002\022\021\n\roperator_trim\020\003\"P\n\016request_type_"
     "t\022\023\n\017need_flash_info\020\001\022\027\n\023not_need_flash"
@@ -245,8 +245,8 @@ void Message::SharedCtor() {
   flash_full_blk_utilization_ = 0;
   node_nr_erases_ = 0u;
   local_log_utilization_ = 0;
-  request_number_ = 0;
-  response_time_ = 0;
+  request_number_ = GOOGLE_ULONGLONG(0);
+  response_time_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -505,31 +505,31 @@ bool Message::MergePartialFromCodedStream(
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(109)) goto parse_request_number;
+        if (input->ExpectTag(104)) goto parse_request_number;
         break;
       }
 
-      // required float request_number = 13;
+      // required uint64 request_number = 13;
       case 13: {
-        if (tag == 109) {
+        if (tag == 104) {
          parse_request_number:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
                  input, &request_number_)));
           set_has_request_number();
         } else {
           goto handle_unusual;
         }
-        if (input->ExpectTag(117)) goto parse_response_time;
+        if (input->ExpectTag(112)) goto parse_response_time;
         break;
       }
 
-      // optional float response_time = 14;
+      // optional uint32 response_time = 14;
       case 14: {
-        if (tag == 117) {
+        if (tag == 112) {
          parse_response_time:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
                  input, &response_time_)));
           set_has_response_time();
         } else {
@@ -626,14 +626,14 @@ void Message::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(12, this->local_log_utilization(), output);
   }
 
-  // required float request_number = 13;
+  // required uint64 request_number = 13;
   if (has_request_number()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(13, this->request_number(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(13, this->request_number(), output);
   }
 
-  // optional float response_time = 14;
+  // optional uint32 response_time = 14;
   if (has_response_time()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(14, this->response_time(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(14, this->response_time(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -708,14 +708,14 @@ void Message::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(12, this->local_log_utilization(), target);
   }
 
-  // required float request_number = 13;
+  // required uint64 request_number = 13;
   if (has_request_number()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(13, this->request_number(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(13, this->request_number(), target);
   }
 
-  // optional float response_time = 14;
+  // optional uint32 response_time = 14;
   if (has_response_time()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(14, this->response_time(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(14, this->response_time(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -804,14 +804,18 @@ int Message::ByteSize() const {
       total_size += 1 + 4;
     }
 
-    // required float request_number = 13;
+    // required uint64 request_number = 13;
     if (has_request_number()) {
-      total_size += 1 + 4;
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->request_number());
     }
 
-    // optional float response_time = 14;
+    // optional uint32 response_time = 14;
     if (has_response_time()) {
-      total_size += 1 + 4;
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt32Size(
+          this->response_time());
     }
 
   }

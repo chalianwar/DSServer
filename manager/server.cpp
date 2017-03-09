@@ -38,12 +38,7 @@ int main(int argc, char **argv){
 		test.flash_full_blk_utilization = 123.456;
 		test.node_nr_erases = 23;
 		test.local_log_utilization = 123.456;
-		test.request_number = 0.0 + k;
-		fprintf(stderr, "request number %f\n", test.request_number);
-
 		proxies[0]->send_data_obj(test);
-		//sleep(1);
-
 		}
 	}
 

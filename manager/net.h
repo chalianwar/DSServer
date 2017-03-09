@@ -48,8 +48,8 @@ struct data_object{
 
 	uint32_t          node_nr_erases;
 	float             local_log_utilization;
-	float			  request_number;
-	float			  response_time;
+	uint64_t			  request_number;
+	uint32_t			  response_time;
 };
 
 class NetworkServer {

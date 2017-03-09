@@ -266,19 +266,19 @@ class Message : public ::google::protobuf::Message {
   inline float local_log_utilization() const;
   inline void set_local_log_utilization(float value);
 
-  // required float request_number = 13;
+  // required uint64 request_number = 13;
   inline bool has_request_number() const;
   inline void clear_request_number();
   static const int kRequestNumberFieldNumber = 13;
-  inline float request_number() const;
-  inline void set_request_number(float value);
+  inline ::google::protobuf::uint64 request_number() const;
+  inline void set_request_number(::google::protobuf::uint64 value);
 
-  // optional float response_time = 14;
+  // optional uint32 response_time = 14;
   inline bool has_response_time() const;
   inline void clear_response_time();
   static const int kResponseTimeFieldNumber = 14;
-  inline float response_time() const;
-  inline void set_response_time(float value);
+  inline ::google::protobuf::uint32 response_time() const;
+  inline void set_response_time(::google::protobuf::uint32 value);
 
   // @@protoc_insertion_point(class_scope:dataobj.Message)
  private:
@@ -327,8 +327,8 @@ class Message : public ::google::protobuf::Message {
   float flash_full_blk_utilization_;
   ::google::protobuf::uint32 node_nr_erases_;
   float local_log_utilization_;
-  float request_number_;
-  float response_time_;
+  ::google::protobuf::uint64 request_number_;
+  ::google::protobuf::uint32 response_time_;
   friend void  protobuf_AddDesc_dataobj_2eproto();
   friend void protobuf_AssignDesc_dataobj_2eproto();
   friend void protobuf_ShutdownFile_dataobj_2eproto();
@@ -727,7 +727,7 @@ inline void Message::set_local_log_utilization(float value) {
   // @@protoc_insertion_point(field_set:dataobj.Message.local_log_utilization)
 }
 
-// required float request_number = 13;
+// required uint64 request_number = 13;
 inline bool Message::has_request_number() const {
   return (_has_bits_[0] & 0x00001000u) != 0;
 }
@@ -738,20 +738,20 @@ inline void Message::clear_has_request_number() {
   _has_bits_[0] &= ~0x00001000u;
 }
 inline void Message::clear_request_number() {
-  request_number_ = 0;
+  request_number_ = GOOGLE_ULONGLONG(0);
   clear_has_request_number();
 }
-inline float Message::request_number() const {
+inline ::google::protobuf::uint64 Message::request_number() const {
   // @@protoc_insertion_point(field_get:dataobj.Message.request_number)
   return request_number_;
 }
-inline void Message::set_request_number(float value) {
+inline void Message::set_request_number(::google::protobuf::uint64 value) {
   set_has_request_number();
   request_number_ = value;
   // @@protoc_insertion_point(field_set:dataobj.Message.request_number)
 }
 
-// optional float response_time = 14;
+// optional uint32 response_time = 14;
 inline bool Message::has_response_time() const {
   return (_has_bits_[0] & 0x00002000u) != 0;
 }
@@ -762,14 +762,14 @@ inline void Message::clear_has_response_time() {
   _has_bits_[0] &= ~0x00002000u;
 }
 inline void Message::clear_response_time() {
-  response_time_ = 0;
+  response_time_ = 0u;
   clear_has_response_time();
 }
-inline float Message::response_time() const {
+inline ::google::protobuf::uint32 Message::response_time() const {
   // @@protoc_insertion_point(field_get:dataobj.Message.response_time)
   return response_time_;
 }
-inline void Message::set_response_time(float value) {
+inline void Message::set_response_time(::google::protobuf::uint32 value) {
   set_has_response_time();
   response_time_ = value;
   // @@protoc_insertion_point(field_set:dataobj.Message.response_time)

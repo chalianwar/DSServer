@@ -23,8 +23,8 @@ message Message {
 	required float             flash_full_blk_utilization = 10;
 	required uint32          node_nr_erases = 11;
 	required float             local_log_utilization = 12;
-	required float		   request_number = 13;
-	optional float		   response_time = 14;
+	required uint64		   request_number = 13;
+	optional uint32		   response_time = 14;
 }
 
 
