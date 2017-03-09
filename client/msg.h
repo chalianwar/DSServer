@@ -6,9 +6,11 @@
 #include "link.h"
 #include "fde.h"
 #include "util/bytes.h"
+#include "dataobj.pb.h"
 
 
 rstatus_t req_recv(NetworkServer *proxy, Link *conn);
 rstatus_t rsp_send(NetworkServer *proxy, Link *conn);
+data_object convert_to_dobj (dataobj::Message d);
 
 #endif

@@ -52,7 +52,7 @@ rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 	if (smsg == NULL) {
 		return CO_OK;  // yue: nothing to send
 	}
-	fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
+	//fprintf(stderr, "rsp_send: %s\nrsp_size: %d\n", smsg, smsg->size());
 
 	int len = conn->msg_write(smsg);
 	if (len <= 0) {

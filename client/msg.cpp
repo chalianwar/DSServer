@@ -3,7 +3,7 @@
 #include "msg.h"
 #include "net.h"
 #include <string>
-#include "dataobj.pb.h"
+
 const uint32_t MAGIC = 0x06121983;
 
 int global_req_number = 0;
@@ -18,7 +18,7 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		return CO_ERR;
 	}
 
-	fprintf(stderr, "req_recv: %s\n req_size: %d\n", msg->data(), msg->size());
+	//fprintf(stderr, "req_recv: %s\n req_size: %d\n", msg->data(), msg->size());
 	char *ptr = msg->data();
 	std::string abcd (msg->data(), msg->size());
 	int parsed = 0;
@@ -32,10 +32,13 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		std::string token(ptr, totalSize);
 		dataobj::Message d;
 		d.ParseFromString(token);
-		int index = d.ec_index();
-		fprintf(stderr, "--------------- INDEX: %d\n", index);
+
+		data_object dobj = convert_to_dobj(d);
+		fprintf(stderr, "--------------- Request Number: %f\n", dobj.request_number);
 		ptr += totalSize;
 		parsed += totalSize;
+
+		//proxy->pq.push();
 	}
 
 
@@ -73,6 +76,29 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 
 	return CO_OK;
 }
+
+data_object convert_to_dobj (dataobj::Message d) {
+	data_object rcv;
+	rcv.ec_index = d.ec_index();
+	rcv.obj_no = d.obj_no(); //obj_no
+	rcv.offset = d.offset(); //offset in object
+	rcv.length = d.length();  //size in pages
+	rcv.operator_t = (d.operator_t() == dataobj::Message::operator_write ? trace_operator::operator_write :
+			(d.operator_t() == dataobj::Message::operator_read ? trace_operator::operator_read :
+					trace_operator::operator_trim));
+	rcv.timestamp = d.timestamp();// start_time
+	rcv.rq_type = (d.rq_type() == dataobj::Message::need_flash_info ? request_type_t::need_flash_info :
+				(d.rq_type() == dataobj::Message::not_need_flash_info ? request_type_t::not_need_flash_info :
+								request_type_t::shut_cluster));
+	rcv.flash_utilization = d.flash_utilization();
+	rcv.flash_victim_utilization = d.flash_victim_utilization();
+	rcv.flash_full_blk_utilization = d.flash_full_blk_utilization();
+	rcv.node_nr_erases = d.node_nr_erases();
+	rcv.local_log_utilization = d.local_log_utilization();
+	rcv.request_number = d.request_number();
+	return rcv;
+}
+
 
 rstatus_t rsp_send(NetworkServer *proxy, Link *conn) {
 

@@ -148,7 +148,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	dataobj::Message d;
 	d.ParseFromString(token);
 	int index = d.ec_index();
-	fprintf(stderr, "--------------- INDEX: %d\n", index);
+	//fprintf(stderr, "--------------- INDEX: %d\n", index);
 
 	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
 	remote_conn->omsg_q.push_back(rsp);

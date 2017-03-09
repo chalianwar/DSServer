@@ -48,6 +48,7 @@ struct data_object{
 
 	uint32_t          node_nr_erases;
 	float             local_log_utilization;
+	float			  request_number;
 	float			  response_time;
 };
 

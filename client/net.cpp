@@ -92,3 +92,7 @@ Fdevents *NetworkServer::get_fdes() {
 	return fdes;
 }
 
+bool operator<(const data_object& lhs, const data_object& rhs)
+{
+  return lhs.request_number < rhs.request_number;
+}

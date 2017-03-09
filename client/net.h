@@ -4,26 +4,9 @@
 #include "server.h"
 #include "link.h"
 #include "fde.h"
+#include <queue>
 
 class Link;
-
-class NetworkServer {
-	public:
-		NetworkServer();
-		rstatus_t main_loop();
-		Link *proxy_listen();
-		Link *connect_to_server();
-		Link *accept_conn();
-		rstatus_t send(const Fdevent *fde);
-		rstatus_t recv(const Fdevent *fde);
-		Fdevents *get_fdes();
-		rstatus_t proc_info(Link *link);
-	private:
-		Fdevents *fdes;
-		Link *client_conn;
-		Link *server_conn;
-		int conn_count;
-};
 
 typedef enum trace_operator{
 	operator_read = 1,
@@ -53,6 +36,37 @@ struct data_object{
 
 	uint32_t          node_nr_erases;
 	float             local_log_utilization;
+	float			  request_number;
+	float			  response_time;
+};
+
+bool operator<(const data_object& lhs, const data_object& rhs);
+
+struct LessThanByReqNumber
+{
+  bool operator()(const data_object& lhs, const data_object& rhs) const
+  {
+    return lhs.request_number < rhs.request_number;
+  }
+};
+
+class NetworkServer {
+	public:
+		NetworkServer();
+		rstatus_t main_loop();
+		Link *proxy_listen();
+		Link *connect_to_server();
+		Link *accept_conn();
+		rstatus_t send(const Fdevent *fde);
+		rstatus_t recv(const Fdevent *fde);
+		Fdevents *get_fdes();
+		rstatus_t proc_info(Link *link);
+		std::priority_queue<data_object, std::vector<data_object>, LessThanByReqNumber> pq;
+	private:
+		Fdevents *fdes;
+		Link *client_conn;
+		Link *server_conn;
+		int conn_count;
 };
 
 #endif
