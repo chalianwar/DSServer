@@ -41,7 +41,7 @@ int NetworkServer::main_loop(void) {
 	fdes->set(server_conn->fd(), FDEVENT_IN, 1, server_conn);
 
 	while (true) {
-		events = fdes->wait(50); // yue: so far timeout hardcoded
+		events = fdes->wait(50000); // yue: so far timeout hardcoded
 		if (events == NULL) {
 			return CO_ERR;
 		}
@@ -123,6 +123,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	std::string dobj = dmessage.SerializeAsString();
 
 	String *req = new String(8);
+	req->append(MAGIC);
 	req->append(dobj.size());
 	req->append(dobj.c_str(), dobj.size());
 	std::vector<char> v(req->data(), req->data() + req->size());
@@ -133,6 +134,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	rsp->append(bts, v.size());
 
 	char *ptr = rsp->data();
+	ptr += sizeof(uint32_t);
 	size_t *sz  = (size_t *)ptr;
 	size_t totalSize = *sz;
 	ptr += sizeof(size_t);

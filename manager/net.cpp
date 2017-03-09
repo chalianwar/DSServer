@@ -130,6 +130,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	std::string dobj = dmessage.SerializeAsString();
 
 	String *req = new String(8);
+	req->append(MAGIC);
 	req->append(dobj.size());
 	req->append(dobj.c_str(), dobj.size());
 	std::vector<char> v(req->data(), req->data() + req->size());
@@ -140,6 +141,7 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	rsp->append(bts, v.size());
 
 	char *ptr = rsp->data();
+	ptr += sizeof(uint32_t);
 	size_t *sz  = (size_t *)ptr;
 	size_t totalSize = *sz;
 	ptr += sizeof(size_t);
@@ -151,6 +153,11 @@ rstatus_t NetworkServer::send_data_obj (data_object test) {
 	//fprintf(stderr, "--------------- INDEX: %d\n", index);
 
 	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
+
+//	if(remote_conn->omsg_q.size() > 50) {
+//		sleep(10);
+//	}
+
 	remote_conn->omsg_q.push_back(rsp);
 	Fdevents *fdes = get_fdes();
 	fdes->set(remote_conn->fd(), FDEVENT_OUT, 1, remote_conn);

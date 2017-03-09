@@ -52,20 +52,44 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	int parsed = 0;
 
 	while(parsed < msg->size()) {
-		size_t *sz  = (size_t *)ptr;
-		size_t totalSize = *sz;
-		ptr += sizeof(size_t);
-		parsed += sizeof(size_t);
 
-		std::string token(ptr, totalSize);
-		dataobj::Message d;
-		d.ParseFromString(token);
+			uint32_t *magic;
+			magic = (uint32_t *)ptr;
+			if(*magic != MAGIC) {
+				fprintf(stderr, "MAGIC NUMBER MISMATCH: %d\n", *magic);
+				while(parsed < msg->size()) {
+				ptr += 1;
+				parsed += 1;
+				uint32_t *magic;
+				magic = (uint32_t *)ptr;
+				if(*magic != MAGIC)
+					ptr += sizeof(uint32_t);
+					parsed += sizeof(uint32_t);
+					continue;
+				}
+				break;
+			}
+			ptr += sizeof(uint32_t);
+			parsed += sizeof(uint32_t);
 
-		data_object dobj = convert_to_dobj(d);
-		fprintf(stderr, "--------------- Repliead Request Number: %d\n", dobj.request_number);
-		ptr += totalSize;
-		parsed += totalSize;
-	}
+			size_t *sz  = (size_t *)ptr;
+			size_t totalSize = *sz;
+			ptr += sizeof(size_t);
+			parsed += sizeof(size_t);
+
+			std::string token(ptr, totalSize);
+			dataobj::Message d;
+			d.ParseFromString(token);
+
+			data_object dobj = convert_to_dobj(d);
+			fprintf(stderr, "--------------- Reply Number: %d\n", dobj.request_number);
+			ptr += totalSize;
+			parsed += totalSize;
+
+			if (parsed == msg->size()) {
+				fprintf(stderr, "=====DONE====\n");
+			}
+		}
 
 	return CO_OK;
 }

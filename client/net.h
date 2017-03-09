@@ -8,6 +8,8 @@
 #include "dataobj.pb.h"
 #include "util/str.h"
 
+const uint32_t MAGIC = 0x06121983;
+
 class Link;
 
 typedef enum trace_operator{
@@ -65,6 +67,7 @@ class NetworkServer {
 		rstatus_t proc_info(Link *link);
 		std::priority_queue<data_object, std::vector<data_object>, LessThanByReqNumber> pq;
 		rstatus_t send_data_obj (data_object test);
+		//String partial;
 	private:
 		Fdevents *fdes;
 		Link *client_conn;

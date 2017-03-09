@@ -4,7 +4,6 @@
 #include "net.h"
 #include <string>
 
-const uint32_t MAGIC = 0x06121983;
 
 int global_req_number = 0;
 
@@ -24,6 +23,26 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 	int parsed = 0;
 
 	while(parsed < msg->size()) {
+
+		uint32_t *magic;
+		magic = (uint32_t *)ptr;
+		if(*magic != MAGIC) {
+			fprintf(stderr, "MAGIC NUMBER MISMATCH: %d\n", *magic);
+			while(parsed < msg->size()) {
+			ptr += 1;
+			parsed += 1;
+			uint32_t *magic;
+			magic = (uint32_t *)ptr;
+			if(*magic != MAGIC)
+				ptr += sizeof(uint32_t);
+				parsed += sizeof(uint32_t);
+				continue;
+			}
+			break;
+		}
+		ptr += sizeof(uint32_t);
+		parsed += sizeof(uint32_t);
+
 		size_t *sz  = (size_t *)ptr;
 		size_t totalSize = *sz;
 		ptr += sizeof(size_t);
@@ -41,6 +60,10 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		// push to sorted queue
 		proxy->pq.push(dobj);
 		process_queue(proxy);
+
+		if (parsed == msg->size()) {
+			fprintf(stderr, "=====DONE====\n");
+		}
 	}
 
 	return CO_OK;
