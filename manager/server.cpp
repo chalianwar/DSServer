@@ -39,6 +39,7 @@ int main(int argc, char **argv){
 		test.node_nr_erases = 23;
 		test.local_log_utilization = 123.456;
 		proxies[0]->send_data_obj(test);
+		usleep(10);
 		}
 	}
 
