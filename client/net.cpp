@@ -96,3 +96,56 @@ bool operator<(const data_object& lhs, const data_object& rhs)
 {
   return lhs.request_number < rhs.request_number;
 }
+
+
+//Send the data to the node
+rstatus_t NetworkServer::send_data_obj (data_object test) {
+
+	dataobj::Message dmessage;
+	dmessage.set_ec_index(test.ec_index);
+	dmessage.set_obj_no(test.obj_no);
+	dmessage.set_offset(test.offset);
+	dmessage.set_length(test.length);
+	dmessage.set_operator_t(test.operator_t == dataobj::Message::operator_write ? dataobj::Message::operator_write :
+			(test.operator_t == dataobj::Message::operator_read ? dataobj::Message::operator_read :
+							dataobj::Message::operator_trim));
+	dmessage.set_timestamp(test.timestamp);
+	dmessage.set_flash_utilization(test.flash_utilization);
+	dmessage.set_flash_victim_utilization(test.flash_victim_utilization);
+	dmessage.set_flash_full_blk_utilization(test.flash_full_blk_utilization);
+	dmessage.set_rq_type(test.rq_type == dataobj::Message::need_flash_info ? dataobj::Message::need_flash_info :
+			(test.rq_type == dataobj::Message::not_need_flash_info ? dataobj::Message::not_need_flash_info :
+							dataobj::Message::shut_cluster));
+	dmessage.set_node_nr_erases(test.node_nr_erases);
+	dmessage.set_local_log_utilization(test.local_log_utilization);
+	dmessage.set_request_number(test.request_number);
+
+	std::string dobj = dmessage.SerializeAsString();
+
+	String *req = new String(8);
+	req->append(dobj.size());
+	req->append(dobj.c_str(), dobj.size());
+	std::vector<char> v(req->data(), req->data() + req->size());
+	char* bts = &v[0];
+
+	//fprintf(stderr, "req: %s\nreq_size: %d\n", bts, sizeof(bts));
+	std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts);
+	rsp->append(bts, v.size());
+
+	char *ptr = rsp->data();
+	size_t *sz  = (size_t *)ptr;
+	size_t totalSize = *sz;
+	ptr += sizeof(size_t);
+
+	std::string token(ptr, totalSize);
+	dataobj::Message d;
+	d.ParseFromString(token);
+	int index = d.ec_index();
+	//fprintf(stderr, "--------------- INDEX: %d\n", index);
+
+	//fprintf(stderr, "req: %s\nreq_size: %d\n", rsp->data(), rsp->size());
+	server_conn->omsg_q.push_back(rsp);
+	Fdevents *fdes = get_fdes();
+	fdes->set(server_conn->fd(), FDEVENT_OUT, 1, server_conn);
+	delete req;
+}

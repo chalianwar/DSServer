@@ -5,6 +5,8 @@
 #include "link.h"
 #include "fde.h"
 #include <queue>
+#include "dataobj.pb.h"
+#include "util/str.h"
 
 class Link;
 
@@ -62,6 +64,7 @@ class NetworkServer {
 		Fdevents *get_fdes();
 		rstatus_t proc_info(Link *link);
 		std::priority_queue<data_object, std::vector<data_object>, LessThanByReqNumber> pq;
+		rstatus_t send_data_obj (data_object test);
 	private:
 		Fdevents *fdes;
 		Link *client_conn;

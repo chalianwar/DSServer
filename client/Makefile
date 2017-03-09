@@ -22,7 +22,7 @@ CPPFLAGS = -c -std=c++11 $(INC) $(OPTS) $(DEBUG) -D_LARGEFILE_SOURCE \
 	
 OBJS = fde.o link.o msg.o net.o server.o resp.o dataobj.pb.o
 TARGET = client
-UTIL_OBJS = ./util/log.o ./util/config.o ./util/bytes.o ./util/sorted_set.o ./util/app.o
+UTIL_OBJS = ./util/log.o ./util/config.o ./util/bytes.o ./util/sorted_set.o ./util/app.o ./util/str.o
 UTIL_LIB = ./util/libutil.a
 LIBS= -lprotobuf
 
@@ -52,6 +52,9 @@ $(UTIL_LIB) : $(UTIL_OBJS)
 	${CPP} ${CPPFLAGS} -c -o $@ $<
 
 ./util/log.o: ./util/log.cpp ./util/log.h
+	${CPP} ${CPPFLAGS} -c -o $@ $<
+
+./util/str.o: ./util/str.cpp ./util/str.h
 	${CPP} ${CPPFLAGS} -c -o $@ $<
 
 ./util/config.o: ./util/config.cpp ./util/config.h

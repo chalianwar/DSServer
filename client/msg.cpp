@@ -38,43 +38,19 @@ rstatus_t req_recv(NetworkServer *proxy, Link *conn) {
 		ptr += totalSize;
 		parsed += totalSize;
 
-		//proxy->pq.push();
+		// push to sorted queue
+		proxy->pq.push(dobj);
+		process_queue(proxy);
 	}
 
-
-//	std::string delimiter = std::to_string(MAGIC);
-//	if(message.find(delimiter))
-//		exit(-1);
-//
-//	size_t pos = 0;
-//	std::string token;
-//	while ((pos = message.find(delimiter)) != std::string::npos) {
-//	    token = message.substr(0, pos);
-//	    fprintf(stderr, "sub messages: %s - sub message size %d\n", token, token.size());
-//		dataobj::Message dmessage;
-//		dmessage.ParseFromString(token);
-//		int req_num = dmessage.request_number();
-//		fprintf(stderr, "Request number: %d\n", req_num);
-//		message.erase(0, pos + delimiter.length());
-//
-//		dmessage.set_response_time(12345);
-//
-//		std::string dobj;
-//		dmessage.SerializeToString(&dobj);
-//		dobj.append(std::to_string(MAGIC).c_str());
-//		char bts[dobj.length()];
-//		strcpy(bts, dobj.c_str());
-//
-//		// populate the response buffer queue
-//		//std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(bts, sizeof(bts));
-//		std::shared_ptr<Buffer> rsp = std::make_shared<Buffer>(sizeof(bts));
-//		rsp->append(bts, sizeof(bts));
-//		conn->omsg_q.push_back(rsp);
-//		Fdevents *fdes = proxy->get_fdes();
-//		fdes->set(conn->fd(), FDEVENT_OUT, 1, conn);
-//	}
-
 	return CO_OK;
+}
+
+rstatus_t process_queue(NetworkServer *proxy) {
+	data_object test = proxy->pq.top();
+	proxy->pq.pop();
+	return proxy->send_data_obj(test);
+
 }
 
 data_object convert_to_dobj (dataobj::Message d) {
